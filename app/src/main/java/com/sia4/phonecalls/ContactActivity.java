@@ -25,14 +25,14 @@ import java.util.ArrayList;
 
 public class ContactActivity extends AppCompatActivity {
 
-    final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0;
+    final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     ArrayList<Contact> contacts = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
-        if (checkPermissions() == true) {
+        if (checkPermissions()) {
             setupContactsListView();
         }
     }
@@ -41,11 +41,11 @@ public class ContactActivity extends AppCompatActivity {
         int permissionReadContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
 
         if (permissionReadContacts != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
+           // if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
                 Toast.makeText(this, "Contacts permission is required for this feature to work.", Toast.LENGTH_SHORT).show();
                 String[] permissions = {Manifest.permission.READ_CONTACTS};
                 ActivityCompat.requestPermissions(this, permissions, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            }
+           // }
         } else {
             return true;
         }

@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ScheduleActivity"></activity>
         <activity android:name=".PhoneActivity" />
         <activity android:name=".ContactActivity" />
         <activity android:name=".MainActivity">

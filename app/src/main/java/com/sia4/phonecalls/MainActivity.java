@@ -3,7 +3,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -33,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_schedule).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "This feature is not implemented yet.", Toast.LENGTH_SHORT).show();
+                Intent scheduleIntent = new Intent(MainActivity.this, ScheduleActivity.class);
+                startActivity(scheduleIntent);
             }
         });
     }

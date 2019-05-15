@@ -86,7 +86,7 @@ public class ContactActivity extends AppCompatActivity {
         return contacts;
     }
 
-    private class Contact {
+    public static final class Contact {
         Image avatar;
         String name;
         String phoneNumber;

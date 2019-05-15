@@ -31,4 +31,26 @@
         android:layout_height="wrap_content"
         android:text="Not selected"/>
 
+    <Button
+        android:id="@+id/button_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select Contact"/>
+
+    <TextView
+        android:id="@+id/textView_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not selected"/>
+
+    <Button
+        android:id="@+id/button_schedule_call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Schedule call"/>
+
+    <ListView
+        android:id="@+id/listView_schedules"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

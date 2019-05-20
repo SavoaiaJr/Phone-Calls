@@ -19,6 +19,7 @@ public class PhoneManager {
             Intent callIntent = new Intent(Intent.ACTION_CALL);
             if (/*number.matches("^[0-9]{10,13}$")*/true) {
                 callIntent.setData(Uri.parse("tel:" + number));
+                callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(callIntent);
             } else {
                 Toast.makeText(context, "Numarul format nu este corect.", Toast.LENGTH_SHORT).show();

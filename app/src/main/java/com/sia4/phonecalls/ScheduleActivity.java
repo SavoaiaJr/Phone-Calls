@@ -46,6 +46,7 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
     int str = 0;
 
     DataBaseManager dbManager = new DataBaseManager(ScheduleActivity.this);
+    CallScheduleManager callScheduleManager = new CallScheduleManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,10 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
                     Toast.makeText(ScheduleActivity.this, "Fill all details.", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                if (callScheduleManager.addAlarm(currentSchedule, ScheduleActivity.this) == false) {
+                    Toast.makeText(ScheduleActivity.this, "Date and Time should be in future.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 dbManager.addSchedule(currentSchedule);
                 ((BaseAdapter)((ListView)findViewById(R.id.listView_schedules)).getAdapter()).notifyDataSetChanged();
 
@@ -336,7 +340,8 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
             convertView.findViewById(R.id.button_remove).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    schedules.remove(position);
+                    dbManager.removeSchedule(schedule);
+                    ((BaseAdapter)((ListView)findViewById(R.id.listView_schedules)).getAdapter()).notifyDataSetChanged();
                 }
             });
 

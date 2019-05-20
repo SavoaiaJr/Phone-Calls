@@ -2,6 +2,7 @@ package com.sia4.phonecalls;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.Image;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 public class ContactActivity extends AppCompatActivity {
 
     final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    public final static String NAME_KEY = "name";
+    public final static String PHONE_KEY = "phone";
     ArrayList<Contact> contacts = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,14 @@ public class ContactActivity extends AppCompatActivity {
         if (checkPermissions()) {
             setupContactsListView();
         }
+
+        addDummyContacts();
+    }
+
+    public void addDummyContacts() {
+        contacts.add(new ContactActivity.Contact("Andrei Smocot", "0734482441"));
+        contacts.add(new ContactActivity.Contact("Constantin Vrabie", "0734482442"));
+        contacts.add(new ContactActivity.Contact("Madalin Savoaia", "0734482443"));
     }
 
     private Boolean checkPermissions() {
@@ -134,7 +145,12 @@ public class ContactActivity extends AppCompatActivity {
             convertView.findViewById(R.id.button_sendMessage).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(),"This feature is not yet implemented",Toast.LENGTH_SHORT).show();
+                    if (currentContact.phoneNumber != null) {
+                        Intent intent = new Intent(ContactActivity.this, SendMessageActivity.class);
+                        intent.putExtra(NAME_KEY, currentContact.name);
+                        intent.putExtra(PHONE_KEY, currentContact.phoneNumber);
+                        startActivity(intent);
+                    }
                 }
             });
 

@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,9 +41,12 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
 
     final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     ArrayList<ContactActivity.Contact> contacts = new ArrayList<>();
-    Schedule currentSchedule;
+    Schedule currentSchedule = new Schedule();
     ArrayList<Schedule> schedules = new ArrayList<>();
     int str = 0;
+
+    DataBaseManager dbManager = new DataBaseManager(ScheduleActivity.this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,11 +84,35 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
             @Override
             public void onClick(View v) {
                 // TO DO - Implement schedule call
-                schedules.add(currentSchedule);
+
+                if (isCurrentScheduleComplete() == false) {
+                    Toast.makeText(ScheduleActivity.this, "Fill all details.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                dbManager.addSchedule(currentSchedule);
                 ((BaseAdapter)((ListView)findViewById(R.id.listView_schedules)).getAdapter()).notifyDataSetChanged();
+
+                cleanCurrentSchedule();
             }
         });
     }
+
+    private void cleanCurrentSchedule() {
+        currentSchedule = new Schedule();
+        ((TextView) findViewById(R.id.textView_day)).setText("Not selected");
+        ((TextView) findViewById(R.id.textView_time)).setText("Not selected");
+        ((TextView) findViewById(R.id.textView_contact)).setText("Not selected");
+    }
+
+    private boolean isCurrentScheduleComplete() {
+        if (currentSchedule.day != -1 && currentSchedule.month != -1 && currentSchedule.year != -1 &&
+                currentSchedule.hour != -1 && currentSchedule.minute != -1 && currentSchedule.phone != null && currentSchedule.name != null) {
+            return true;
+        }
+        return false;
+    }
+
 
     private void setupSchedulesListView() {
         ListView listView_contacts = (ListView) findViewById(R.id.listView_schedules);
@@ -188,10 +216,6 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
 
     @Override
     public void setDate(int year, int month, int day) {
-        if (currentSchedule == null) {
-            currentSchedule = new Schedule();
-        }
-
         currentSchedule.year = year;
         currentSchedule.month = month;
         currentSchedule.day = day;
@@ -201,10 +225,6 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
 
     @Override
     public void setTime(int hour, int minute) {
-        if (currentSchedule == null) {
-            currentSchedule = new Schedule();
-        }
-
         currentSchedule.hour = hour;
         currentSchedule.minute = minute;
 
@@ -256,26 +276,31 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
         }
     }
 
-    public final class Schedule {
-        int day;
-        int month;
-        int year;
+    public static final class Schedule {
+        long id = -1;
+        int day = -1;
+        int month = -1;
+        int year = -1;
 
-        int hour;
-        int minute;
+        int hour = -1;
+        int minute = -1;
 
         String name;
         String phone;
 
         public Schedule() {}
 
-        public Schedule(int day, int month, int year, int hour, int minute) {
+        public Schedule(long id, int day, int month, int year, int hour, int minute, String name, String phone) {
+            this.id = id;
             this.day = day;
             this.month = month;
             this.year = year;
 
             this.hour = hour;
             this.minute = minute;
+
+            this.name = name;
+            this.phone = phone;
         }
 
         public String getDate() {
@@ -303,7 +328,7 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
             TextView textView_name = (TextView) convertView.findViewById(R.id.textView_name);
             TextView textView_phone = (TextView) convertView.findViewById(R.id.textView_phone);
 
-            final Schedule schedule = schedules.get(position);
+            final Schedule schedule = dbManager.getSchedules().get(position);
 
             textView_name.setText(schedule.name);
             textView_phone.setText(schedule.phone);
@@ -320,7 +345,7 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
 
         @Override
         public int getCount() {
-            return schedules.size();
+            return dbManager.getSchedules().size();
         }
 
         @Override

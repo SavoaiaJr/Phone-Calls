@@ -53,6 +53,7 @@
     <Button
         android:id="@+id/button_send_message"
         android:text="Send Message"
+        android:background="#77C728"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

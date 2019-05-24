@@ -139,6 +139,7 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == PHONE_CALL_AND_READ_CONTACTS_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length > 1

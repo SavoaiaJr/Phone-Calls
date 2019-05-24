@@ -26,6 +26,10 @@ public class PermissionsManager {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED ? true : false;
     }
 
+    public boolean hasSendSMSPermissions(Context context) {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED ? true : false;
+    }
+
 
     public void requestPermissions(Activity activity, String[] permissions, int permissionRequestCode) {
         ActivityCompat.requestPermissions(activity, permissions, permissionRequestCode);

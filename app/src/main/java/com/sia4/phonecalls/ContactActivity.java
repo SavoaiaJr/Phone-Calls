@@ -62,6 +62,8 @@ public class ContactActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == READ_CONTACTS_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -116,9 +118,9 @@ public class ContactActivity extends AppCompatActivity {
 
             textView_name.setText(currentContact.name);
             textView_phone.setText(currentContact.phoneNumber);
-            if (currentContact.avatar != null) {
-//                imageView_avatar.setImageResource(currentContact.avatar);
-            }
+//            if (currentContact.avatar != null) {
+                imageView_avatar.setImageResource(R.mipmap.ic_launcher);
+//            }
 
             convertView.findViewById(R.id.button_call).setOnClickListener(new View.OnClickListener() {
                 @Override

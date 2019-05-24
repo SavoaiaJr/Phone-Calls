@@ -26,7 +26,6 @@ public class PhoneActivity extends AppCompatActivity {
         if(!PermissionsManager.getInstance().hasCallPhonePermissions(PhoneActivity.this)) {
             Toast.makeText(this, "Permissions for Call Phone not granted.", Toast.LENGTH_SHORT).show();
             PermissionsManager.getInstance().requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, PHONE_CALL_PERMISSION_REQUEST_CODE);
-            findViewById(R.id.callButton).setVisibility(View.INVISIBLE);
         }
 
         setup();
@@ -35,11 +34,14 @@ public class PhoneActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         if (requestCode == PHONE_CALL_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permissions for Call Phone granted.", Toast.LENGTH_SHORT).show();
-                findViewById(R.id.callButton).setVisibility(View.VISIBLE);
+            } else {
+                finish();
             }
         }
     }

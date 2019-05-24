@@ -102,6 +102,7 @@
         <Button
             android:id="@+id/callButton"
             android:text="Call"
+            android:background="#77C728"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="4"/>
@@ -109,6 +110,7 @@
         <Button
             android:id="@+id/removeButton"
             android:text="Remove"
+            android:background="#E21422"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>

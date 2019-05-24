@@ -39,7 +39,9 @@ interface DateAndTimeSetter {
 
 public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSetter{
 
-    final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    final int PHONE_CALL_PERMISSION_REQUEST_CODE = 1;
+    final int READ_CONTACTS_PERMISSION_REQUEST_CODE = 2;
+    final int PHONE_CALL_AND_READ_CONTACTS_PERMISSIONS_REQUEST_CODE = 3;
     ArrayList<ContactActivity.Contact> contacts = new ArrayList<>();
     Schedule currentSchedule = new Schedule();
     ArrayList<Schedule> schedules = new ArrayList<>();
@@ -53,7 +55,17 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
         setupSchedulesListView();
-        checkPermissions();
+
+        if (!PermissionsManager.getInstance().hasCallPhonePermissions(ScheduleActivity.this) && !PermissionsManager.getInstance().hasReadContactsPermissions(ScheduleActivity.this)) {
+            Toast.makeText(this, "Permissions for Call Phone and Read Contacts not granted.", Toast.LENGTH_SHORT).show();
+            PermissionsManager.getInstance().requestPermissions(this, new String[] {Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS}, PHONE_CALL_AND_READ_CONTACTS_PERMISSIONS_REQUEST_CODE);
+        } else if(!PermissionsManager.getInstance().hasCallPhonePermissions(ScheduleActivity.this)) {
+            Toast.makeText(this, "Permissions for Call Phone not granted.", Toast.LENGTH_SHORT).show();
+            PermissionsManager.getInstance().requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, PHONE_CALL_PERMISSION_REQUEST_CODE);
+        } else if (!PermissionsManager.getInstance().hasReadContactsPermissions(ScheduleActivity.this)) {
+            Toast.makeText(this, "Permissions for Read Contacts not granted.", Toast.LENGTH_SHORT).show();
+            PermissionsManager.getInstance().requestPermissions(this, new String[] {Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_REQUEST_CODE);
+        }
 
         findViewById(R.id.button_day_schedule).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,33 +137,30 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
         listView_contacts.setAdapter(schedulesAdapter);
     }
 
-    private Boolean checkPermissions() {
-        int permissionReadContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
-
-        if (permissionReadContacts != PackageManager.PERMISSION_GRANTED) {
-            // if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
-            Toast.makeText(this, "Contacts permission is required for this feature to work.", Toast.LENGTH_SHORT).show();
-            String[] permissions = {Manifest.permission.READ_CONTACTS};
-            ActivityCompat.requestPermissions(this, permissions, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-            // }
-        } else {
-            return true;
-        }
-
-        return false;
-    }
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    contacts = getContacts();
-                } else {
-                    checkPermissions();
-                }
+
+        if (requestCode == PHONE_CALL_AND_READ_CONTACTS_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.length > 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions for Call Phone and Read Contacts granted.", Toast.LENGTH_SHORT).show();
+            } else {
+                finish();
+            }
+        } else if (requestCode == PHONE_CALL_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions for Call Phone granted.", Toast.LENGTH_SHORT).show();
+                findViewById(R.id.callButton).setVisibility(View.VISIBLE);
+            } else {
+                finish();
+            }
+        } else if (requestCode == READ_CONTACTS_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions for Read Contacts granted.", Toast.LENGTH_SHORT).show();
+            } else {
+                finish();
             }
         }
     }

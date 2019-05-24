@@ -26,7 +26,7 @@ import java.util.ArrayList;
 
 public class ContactActivity extends AppCompatActivity {
 
-    final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    final int READ_CONTACTS_PERMISSION_REQUEST_CODE = 1;
     public final static String NAME_KEY = "name";
     public final static String PHONE_KEY = "phone";
     ArrayList<Contact> contacts = new ArrayList<>();
@@ -35,10 +35,13 @@ public class ContactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
-        if (checkPermissions()) {
-            setupContactsListView();
+        if (!PermissionsManager.getInstance().hasReadContactsPermissions(ContactActivity.this)) {
+            Toast.makeText(this, "Permissions for Read Contacts not granted.", Toast.LENGTH_SHORT).show();
+            PermissionsManager.getInstance().requestPermissions(this, new String[] {Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_REQUEST_CODE);
+            return;
         }
 
+        setupContactsListView();
         addDummyContacts();
     }
 
@@ -48,21 +51,6 @@ public class ContactActivity extends AppCompatActivity {
         contacts.add(new ContactActivity.Contact("Madalin Savoaia", "0734482443"));
     }
 
-    private Boolean checkPermissions() {
-        int permissionReadContacts = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
-
-        if (permissionReadContacts != PackageManager.PERMISSION_GRANTED) {
-           // if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) {
-                Toast.makeText(this, "Contacts permission is required for this feature to work.", Toast.LENGTH_SHORT).show();
-                String[] permissions = {Manifest.permission.READ_CONTACTS};
-                ActivityCompat.requestPermissions(this, permissions, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-           // }
-        } else {
-            return true;
-        }
-
-        return false;
-    }
 
     private void setupContactsListView() {
         contacts = getContacts();
@@ -74,14 +62,13 @@ public class ContactActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setupContactsListView();
-                } else {
-                    checkPermissions();
-                }
+        if (requestCode == READ_CONTACTS_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions for Read Contacts granted.", Toast.LENGTH_SHORT).show();
+                setupContactsListView();
+            } else {
+                finish();
             }
         }
     }

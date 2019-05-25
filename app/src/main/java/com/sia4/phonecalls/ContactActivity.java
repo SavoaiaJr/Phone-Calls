@@ -27,6 +27,8 @@ import java.util.ArrayList;
 public class ContactActivity extends AppCompatActivity {
 
     final int READ_CONTACTS_PERMISSION_REQUEST_CODE = 1;
+    final int PHONE_CALL_PERMISSION_REQUEST_CODE = 2;
+    final int PHONE_CALL_AND_READ_CONTACTS_PERMISSION_REQUEST_CODE = 3;
     public final static String NAME_KEY = "name";
     public final static String PHONE_KEY = "phone";
     ArrayList<Contact> contacts = new ArrayList<>();
@@ -35,9 +37,17 @@ public class ContactActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
-        if (!PermissionsManager.getInstance().hasReadContactsPermissions(ContactActivity.this)) {
+        if (!PermissionsManager.getInstance().hasCallPhonePermissions(ContactActivity.this) && !PermissionsManager.getInstance().hasReadContactsPermissions(ContactActivity.this)) {
+            Toast.makeText(this, "Permissions for Read Contacts & Phone Calls not granted.", Toast.LENGTH_SHORT).show();
+            PermissionsManager.getInstance().requestPermissions(this, new String[] {Manifest.permission.READ_CONTACTS, Manifest.permission.CALL_PHONE}, PHONE_CALL_AND_READ_CONTACTS_PERMISSION_REQUEST_CODE);
+            return;
+        } else if (!PermissionsManager.getInstance().hasReadContactsPermissions(ContactActivity.this)) {
             Toast.makeText(this, "Permissions for Read Contacts not granted.", Toast.LENGTH_SHORT).show();
             PermissionsManager.getInstance().requestPermissions(this, new String[] {Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_REQUEST_CODE);
+            return;
+        } else if (!PermissionsManager.getInstance().hasCallPhonePermissions(ContactActivity.this)) {
+            Toast.makeText(this, "Permissions for Phone Call not granted.", Toast.LENGTH_SHORT).show();
+            PermissionsManager.getInstance().requestPermissions(this, new String[] {Manifest.permission.CALL_PHONE}, PHONE_CALL_PERMISSION_REQUEST_CODE);
             return;
         }
 
@@ -63,11 +73,26 @@ public class ContactActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == READ_CONTACTS_PERMISSION_REQUEST_CODE) {
+        if (requestCode == PHONE_CALL_AND_READ_CONTACTS_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 1
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions for Read Contacts & Phone Call granted.", Toast.LENGTH_SHORT).show();
+                setupContactsListView();
+            } else {
+                finish();
+            }
+        } else if (requestCode == READ_CONTACTS_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Permissions for Read Contacts granted.", Toast.LENGTH_SHORT).show();
+                setupContactsListView();
+            } else {
+                finish();
+            }
+        } else if (requestCode == PHONE_CALL_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions for PHONE CALL granted.", Toast.LENGTH_SHORT).show();
                 setupContactsListView();
             } else {
                 finish();

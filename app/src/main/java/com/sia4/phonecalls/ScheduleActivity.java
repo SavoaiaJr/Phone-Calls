@@ -339,13 +339,17 @@ public class ScheduleActivity extends AppCompatActivity implements DateAndTimeSe
                 convertView = getLayoutInflater().inflate(R.layout.schedules_layout, parent, false);
             }
 
-            TextView textView_name = (TextView) convertView.findViewById(R.id.textView_name);
-            TextView textView_phone = (TextView) convertView.findViewById(R.id.textView_phone);
+            TextView textView_name = convertView.findViewById(R.id.textView_name);
+            TextView textView_phone = convertView.findViewById(R.id.textView_phone);
+            TextView textView_date = convertView.findViewById(R.id.textView_date);
+            TextView textView_time = convertView.findViewById(R.id.textView_time);
 
             final Schedule schedule = dbManager.getSchedules().get(position);
 
             textView_name.setText(schedule.name);
             textView_phone.setText(schedule.phone);
+            textView_date.setText(schedule.getDate());
+            textView_time.setText(schedule.getTime());
 
             convertView.findViewById(R.id.button_remove).setOnClickListener(new View.OnClickListener() {
                 @Override
